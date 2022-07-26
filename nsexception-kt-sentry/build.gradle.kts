@@ -44,3 +44,5 @@ kotlin {
         }
     }
 }
+
+apply(from = "../gradle/gradle-mvn-mpp-push.gradle")

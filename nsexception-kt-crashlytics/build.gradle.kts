@@ -19,18 +19,28 @@ kotlin {
     val tvosX64 = tvosX64()
     val tvosSimulatorArm64 = tvosSimulatorArm64()
 
-    sourceSets {
-        val commonMain by getting {
-            dependencies {
-                implementation(project(":nsexception-kt-core"))
-            }
-        }
-        val commonTest by getting {
-            dependencies {
-                implementation(kotlin("test"))
-            }
+    val commonMain by sourceSets.getting {
+        dependencies {
+            implementation(project(":nsexception-kt-core"))
         }
     }
+    val commonTest by sourceSets.getting {
+        dependencies {
+            implementation(kotlin("test"))
+        }
+    }
+
+    val nativeMain by sourceSets.creating
+    nativeMain.dependsOn(commonMain)
+
+    targets.withType<org.jetbrains.kotlin.gradle.plugin.mpp.KotlinNativeTarget>().all {
+        val mainSourceSet = compilations.getByName("main").defaultSourceSet
+        val testSourceSet = compilations.getByName("test").defaultSourceSet
+
+        mainSourceSet.dependsOn(nativeMain)
+        testSourceSet.dependsOn(commonTest)
+    }
+
     listOf(
         macosX64, macosArm64,
         iosArm64, iosX64, iosSimulatorArm64,
@@ -44,3 +54,5 @@ kotlin {
         }
     }
 }
+
+apply(from = "../gradle/gradle-mvn-mpp-push.gradle")

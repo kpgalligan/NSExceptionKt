@@ -19,12 +19,23 @@ kotlin {
     tvosX64()
     tvosSimulatorArm64()
 
-    sourceSets {
-        val commonMain by getting
-        val commonTest by getting {
-            dependencies {
-                implementation(kotlin("test"))
-            }
+    val commonMain by sourceSets.getting
+    val commonTest by sourceSets.getting {
+        dependencies {
+            implementation(kotlin("test"))
         }
     }
+
+    val nativeMain by sourceSets.creating
+    nativeMain.dependsOn(commonMain)
+
+    targets.withType<org.jetbrains.kotlin.gradle.plugin.mpp.KotlinNativeTarget>().all {
+        val mainSourceSet = compilations.getByName("main").defaultSourceSet
+        val testSourceSet = compilations.getByName("test").defaultSourceSet
+
+        mainSourceSet.dependsOn(nativeMain)
+        testSourceSet.dependsOn(commonTest)
+    }
 }
+
+apply(from = "../gradle/gradle-mvn-mpp-push.gradle")

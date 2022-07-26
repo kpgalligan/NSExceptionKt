@@ -3,11 +3,17 @@ buildscript {
         gradlePluginPortal()
         mavenCentral()
     }
+    dependencies {
+        classpath("com.vanniktech:gradle-maven-publish-plugin:0.18.0")
+    }
 }
 
+val GROUP: String by project
+val VERSION_NAME: String by project
+
 allprojects {
-    group = "com.rickclephas.kmp"
-    version = "0.1.0-SNAPSHOT"
+    group = GROUP
+    version = VERSION_NAME
 
     repositories {
         mavenCentral()
